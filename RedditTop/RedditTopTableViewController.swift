@@ -33,6 +33,8 @@ class RedditTopTableViewCell: UITableViewCell{
     
     @IBOutlet weak var thumbnail: UIImageView!
     
+    @IBOutlet weak var thumbnailHeightConstraint: NSLayoutConstraint!
+    
     @IBOutlet weak var postedInfo: UILabel!
 }
 
@@ -105,7 +107,13 @@ class RedditTopTableViewController: UITableViewController {
                 
                 let createdUtcDate = Date(timeIntervalSince1970: created_utc)
                 
-                let thumbnail: String? = data["thumbnail"] as? String
+                var thumbnail: String? = nil;
+                
+                if let thumbnail_link = data["thumbnail"] as? String {
+                    if thumbnail_link.hasPrefix("http") {
+                        thumbnail = thumbnail_link
+                    }
+                }
                 
                 let entity = RedditTopEntity(title: title, author: author, created: createdUtcDate, commentsNumber: num_comments, thumbnailUrl: thumbnail);
                 
@@ -129,6 +137,11 @@ class RedditTopTableViewController: UITableViewController {
 
         // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
         // self.navigationItem.rightBarButtonItem = self.editButtonItem
+        
+        self.navigationItem.title = "Reddit top app"
+        
+        self.tableView?.rowHeight = UITableViewAutomaticDimension;
+        self.tableView?.estimatedRowHeight = 210
         
         parseJSON ()
     }
@@ -163,6 +176,9 @@ class RedditTopTableViewController: UITableViewController {
         
         if let thumbnailUrl = redditTopEntity.thumbnailUrl {
             cell.thumbnail?.downloadedFrom(link: thumbnailUrl)
+            cell.thumbnailHeightConstraint.constant = 78;
+        }else{
+            cell.thumbnailHeightConstraint.constant = 0;
         }
 
         return cell
@@ -172,9 +188,9 @@ class RedditTopTableViewController: UITableViewController {
         return "Reddit Top"
     }
     
-    override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 215.0
-    }
+//    override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+//        return 215.0
+//    }
 
     /*
     // Override to support conditional editing of the table view.
