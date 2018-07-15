@@ -41,92 +41,117 @@ class RedditTopTableViewCell: UITableViewCell{
 
 class RedditTopTableViewController: UITableViewController {
 
-    var redditTopItems: [RedditTopEntity] = [RedditTopEntity]()
+    private var redditTopItems: [RedditTopEntity] = [RedditTopEntity]()
+    private var after: String? = nil
+    private var before: String? = nil
+    private var loadingStatus = false
     
     func parseJSON () {
         
-        let url = URL(string: "https://www.reddit.com/top.json?limit=10")
+        if !loadingStatus{
+            
+            loadingStatus = true
+            
+            let url = URL(string: "https://www.reddit.com/top.json?limit=10" + (self.after != nil ? "&after=\(self.after!)" : ""))
         
-        let task = URLSession.shared.dataTask(with: url!) {(data, response, error ) in
-            guard error == nil else {
-                print("returned error")
-                return
-            }
-            
-            guard let content = data else {
-                print("No data")
-                return
-            }
-            
-            guard let json = (try? JSONSerialization.jsonObject(with: content, options: JSONSerialization.ReadingOptions.mutableContainers)) as? [String: Any] else {
-                print("Not containing JSON")
-                return
-            }
-            
-            guard let data = json["data"] as? [String: Any] else {
-                print("Not containing data")
-                return
-            }
-            
-            guard let children = data["children"] as? [Any] else {
-                print("Not containing children")
-                return
-            }
-            
-            children.forEach {child in
+            let task = URLSession.shared.dataTask(with: url!) {(data, response, error ) in
                 
-                guard let childDictionary = child as? [String: Any] else {
-                    print("Incorrect child")
+                weak var weakSelf = self
+                
+                defer {
+                    weakSelf!.loadingStatus = false
+                }
+                
+                guard error == nil else {
+                    print("returned error")
                     return
                 }
                 
-                guard let data = childDictionary["data"] as? [String: Any]  else {
-                    print("No data in child")
+                guard let content = data else {
+                    print("No data")
                     return
                 }
                 
-                guard let title = data["title"] as? String  else {
-                    print("No title")
+                guard let json = (try? JSONSerialization.jsonObject(with: content, options: JSONSerialization.ReadingOptions.mutableContainers)) as? [String: Any] else {
+                    print("Not containing JSON")
                     return
                 }
                 
-                guard let author = data["author"] as? String  else {
-                    print("No author")
+                guard let data = json["data"] as? [String: Any] else {
+                    print("Not containing data")
                     return
                 }
                 
-                guard let created_utc = data["created_utc"] as? Double else {
-                    print("No created_utc")
+                weakSelf!.after = nil;
+                if let after = data["after"] as? String{
+                    weakSelf!.after = after
+                }
+                
+                weakSelf!.before = nil;
+                if let before = data["before"] as? String {
+                    weakSelf!.before = before
+                }
+                
+                guard let children = data["children"] as? [Any] else {
+                    print("Not containing children")
                     return
                 }
                 
-                guard let num_comments = data["num_comments"] as? Int else {
-                    print("No num_comments")
-                    return
-                }
-                
-                let createdUtcDate = Date(timeIntervalSince1970: created_utc)
-                
-                var thumbnail: String? = nil;
-                
-                if let thumbnail_link = data["thumbnail"] as? String {
-                    if thumbnail_link.hasPrefix("http") {
-                        thumbnail = thumbnail_link
+                children.forEach {child in
+                    
+                    guard let childDictionary = child as? [String: Any] else {
+                        print("Incorrect child")
+                        return
                     }
+                    
+                    guard let data = childDictionary["data"] as? [String: Any]  else {
+                        print("No data in child")
+                        return
+                    }
+                    
+                    guard let title = data["title"] as? String  else {
+                        print("No title")
+                        return
+                    }
+                    
+                    guard let author = data["author"] as? String  else {
+                        print("No author")
+                        return
+                    }
+                    
+                    guard let created_utc = data["created_utc"] as? Double else {
+                        print("No created_utc")
+                        return
+                    }
+                    
+                    guard let num_comments = data["num_comments"] as? Int else {
+                        print("No num_comments")
+                        return
+                    }
+                    
+                    let createdUtcDate = Date(timeIntervalSince1970: created_utc)
+                    
+                    var thumbnail: String? = nil;
+                    
+                    if let thumbnail_link = data["thumbnail"] as? String {
+                        if thumbnail_link.hasPrefix("http") {
+                            thumbnail = thumbnail_link
+                        }
+                    }
+                    
+                    let entity = RedditTopEntity(title: title, author: author, created: createdUtcDate, commentsNumber: num_comments, thumbnailUrl: thumbnail);
+                    
+                    weakSelf?.redditTopItems.append(entity)
                 }
                 
-                let entity = RedditTopEntity(title: title, author: author, created: createdUtcDate, commentsNumber: num_comments, thumbnailUrl: thumbnail);
-                
-                
-                self.redditTopItems.append(entity)
+                DispatchQueue.main.async {
+                    
+                    self.tableView.reloadData()
+                }
             }
-            
-            DispatchQueue.main.async {
-                self.tableView.reloadData()
-            }
-        }
         
-        task.resume()
+            task.resume()
+        }
     }
     
     override func viewDidLoad() {
@@ -180,12 +205,27 @@ class RedditTopTableViewController: UITableViewController {
         }else{
             cell.thumbnailHeightConstraint.constant = 0;
         }
+        
+        cell.setNeedsLayout()
 
         return cell
     }
     
     override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
         return "Reddit Top"
+    }
+    
+    override func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        
+        // calculates where the user is in the y-axis
+        let offsetY = scrollView.contentOffset.y
+        let contentHeight = scrollView.contentSize.height
+        
+        if offsetY > contentHeight - scrollView.frame.size.height {
+            
+            // call your API for more data
+            parseJSON()
+        }
     }
     
 //    override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
