@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		2026FA4220FBA28600B6D056 /* ImageViewExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2026FA4120FBA28600B6D056 /* ImageViewExtension.swift */; };
 		20EEB3E220FB488A00439D4E /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20EEB3E120FB488A00439D4E /* AppDelegate.swift */; };
 		20EEB3E720FB488A00439D4E /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 20EEB3E520FB488A00439D4E /* Main.storyboard */; };
 		20EEB3E920FB488A00439D4E /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 20EEB3E820FB488A00439D4E /* Assets.xcassets */; };
@@ -15,6 +16,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		2026FA4120FBA28600B6D056 /* ImageViewExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageViewExtension.swift; sourceTree = "<group>"; };
 		20EEB3DE20FB488A00439D4E /* RedditTop.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RedditTop.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		20EEB3E120FB488A00439D4E /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		20EEB3E620FB488A00439D4E /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
@@ -60,6 +62,7 @@
 				20EEB3E820FB488A00439D4E /* Assets.xcassets */,
 				20EEB3EA20FB488A00439D4E /* LaunchScreen.storyboard */,
 				20EEB3ED20FB488A00439D4E /* Info.plist */,
+				2026FA4120FBA28600B6D056 /* ImageViewExtension.swift */,
 			);
 			path = RedditTop;
 			sourceTree = "<group>";
@@ -137,6 +140,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				20EEB3E220FB488A00439D4E /* AppDelegate.swift in Sources */,
+				2026FA4220FBA28600B6D056 /* ImageViewExtension.swift in Sources */,
 				20EEB3FC20FB524500439D4E /* RedditTopTableViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

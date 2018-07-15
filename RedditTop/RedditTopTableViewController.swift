@@ -8,17 +8,38 @@
 
 import UIKit
 
+struct RedditTopEntity{
+    let title: String
+    let author: String
+    let created: Date
+    let commentsNumber: Int
+    let thumbnailUrl: String?
+    
+    func hoursAgo() -> String{
+        let date = Date()
+        let timeInterval = date.timeIntervalSince(created)
+        
+        let hours = Int(timeInterval/3600.0); //3600 seconds in 1 hours
+        
+        return String(hours)
+    }
+}
+
 class RedditTopTableViewCell: UITableViewCell{
     
     @IBOutlet weak var title: UILabel!
     
+    @IBOutlet weak var comments: UILabel!
+    
     @IBOutlet weak var thumbnail: UIImageView!
+    
+    @IBOutlet weak var postedInfo: UILabel!
 }
 
 
 class RedditTopTableViewController: UITableViewController {
 
-    var redditTopItems: [String] = [String]()
+    var redditTopItems: [RedditTopEntity] = [RedditTopEntity]()
     
     func parseJSON () {
         
@@ -63,11 +84,33 @@ class RedditTopTableViewController: UITableViewController {
                 }
                 
                 guard let title = data["title"] as? String  else {
-                    print("No data in child")
+                    print("No title")
                     return
                 }
                 
-                self.redditTopItems.append(title)
+                guard let author = data["author"] as? String  else {
+                    print("No author")
+                    return
+                }
+                
+                guard let created_utc = data["created_utc"] as? Double else {
+                    print("No created_utc")
+                    return
+                }
+                
+                guard let num_comments = data["num_comments"] as? Int else {
+                    print("No num_comments")
+                    return
+                }
+                
+                let createdUtcDate = Date(timeIntervalSince1970: created_utc)
+                
+                let thumbnail: String? = data["thumbnail"] as? String
+                
+                let entity = RedditTopEntity(title: title, author: author, created: createdUtcDate, commentsNumber: num_comments, thumbnailUrl: thumbnail);
+                
+                
+                self.redditTopItems.append(entity)
             }
             
             DispatchQueue.main.async {
@@ -109,14 +152,28 @@ class RedditTopTableViewController: UITableViewController {
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "RedditTopCell", for: indexPath) as! RedditTopTableViewCell
 
+        let redditTopEntity = redditTopItems[indexPath.row];
+        
         // Configure the cell...
-        cell.title?.text = redditTopItems[indexPath.row]
+        cell.title?.text = redditTopEntity.title
+        cell.postedInfo?.text = "Posted by " + redditTopEntity.author + " " + redditTopEntity.hoursAgo() + " hours ago"
+        cell.comments?.text = "\(redditTopEntity.commentsNumber) Comments"
+        
+        cell.thumbnail.image = UIImage() // to clear content
+        
+        if let thumbnailUrl = redditTopEntity.thumbnailUrl {
+            cell.thumbnail?.downloadedFrom(link: thumbnailUrl)
+        }
 
         return cell
     }
     
     override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
         return "Reddit Top"
+    }
+    
+    override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return 215.0
     }
 
     /*
