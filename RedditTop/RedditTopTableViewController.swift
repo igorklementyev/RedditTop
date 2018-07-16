@@ -8,23 +8,6 @@
 
 import UIKit
 
-struct RedditTopEntity{
-    let title: String
-    let author: String
-    let created: Date
-    let commentsNumber: Int
-    let thumbnailUrl: String?
-    
-    func hoursAgo() -> String{
-        let date = Date()
-        let timeInterval = date.timeIntervalSince(created)
-        
-        let hours = Int(timeInterval/3600.0); //3600 seconds in 1 hours
-        
-        return String(hours)
-    }
-}
-
 class RedditTopTableViewCell: UITableViewCell{
     
     @IBOutlet weak var title: UILabel!
@@ -43,8 +26,9 @@ class RedditTopTableViewController: UITableViewController {
 
     private var redditTopItems: [RedditTopEntity] = [RedditTopEntity]()
     private var after: String? = nil
-    private var before: String? = nil
+    //private var before: String? = nil
     private var loadingStatus = false
+    private var imageUrl = ""
     
     func parseJSON () {
         
@@ -54,78 +38,76 @@ class RedditTopTableViewController: UITableViewController {
             
             let url = URL(string: "https://www.reddit.com/top.json?limit=10" + (self.after != nil ? "&after=\(self.after!)" : ""))
         
-            let task = URLSession.shared.dataTask(with: url!) {(data, response, error ) in
-                
-                weak var weakSelf = self
+            let task = URLSession.shared.dataTask(with: url!) {[weak self] (data, response, error ) in
                 
                 defer {
-                    weakSelf!.loadingStatus = false
+                    self?.loadingStatus = false
                 }
                 
                 guard error == nil else {
-                    print("returned error")
+                    self?.showError("returned error")
                     return
                 }
                 
                 guard let content = data else {
-                    print("No data")
+                    self?.showError("No data")
                     return
                 }
                 
                 guard let json = (try? JSONSerialization.jsonObject(with: content, options: JSONSerialization.ReadingOptions.mutableContainers)) as? [String: Any] else {
-                    print("Not containing JSON")
+                    self?.showError("Not containing JSON")
                     return
                 }
                 
                 guard let data = json["data"] as? [String: Any] else {
-                    print("Not containing data")
+                    self?.showError("Not containing data")
                     return
                 }
                 
-                weakSelf!.after = nil;
+                self?.after = nil;
                 if let after = data["after"] as? String{
-                    weakSelf!.after = after
+                    self?.after = after
                 }
                 
-                weakSelf!.before = nil;
-                if let before = data["before"] as? String {
-                    weakSelf!.before = before
-                }
+//                weakSelf!.before = nil;
+//                if let before = data["before"] as? String {
+//                    weakSelf!.before = before
+//                }
                 
                 guard let children = data["children"] as? [Any] else {
-                    print("Not containing children")
+                    self?.showError("Not containing children")
                     return
                 }
                 
-                children.forEach {child in
+                children.forEach{ child in
                     
                     guard let childDictionary = child as? [String: Any] else {
-                        print("Incorrect child")
+                        self?.showError("Incorrect child")
                         return
                     }
                     
                     guard let data = childDictionary["data"] as? [String: Any]  else {
-                        print("No data in child")
+                        self?.showError("No data in child")
                         return
                     }
                     
                     guard let title = data["title"] as? String  else {
-                        print("No title")
+                        self?.showError("No title")
                         return
                     }
                     
                     guard let author = data["author"] as? String  else {
-                        print("No author")
+                        self?.showError("No author")
                         return
                     }
                     
                     guard let created_utc = data["created_utc"] as? Double else {
-                        print("No created_utc")
+                        self?.showError("No created_utc")
                         return
                     }
                     
                     guard let num_comments = data["num_comments"] as? Int else {
-                        print("No num_comments")
+                        self?.showError("No num_comments")
                         return
                     }
                     
@@ -139,14 +121,22 @@ class RedditTopTableViewController: UITableViewController {
                         }
                     }
                     
-                    let entity = RedditTopEntity(title: title, author: author, created: createdUtcDate, commentsNumber: num_comments, thumbnailUrl: thumbnail);
+                    var image_url: String? = nil;
                     
-                    weakSelf?.redditTopItems.append(entity)
+                    if let image_link = data["url"] as? String {
+                        // chek the destination is image
+                        if image_link.hasSuffix("jpg") || image_link.hasSuffix("png") {
+                            image_url = image_link
+                        }
+                    }
+                    
+                    let entity = RedditTopEntity(title: title, author: author, created: createdUtcDate, commentsNumber: num_comments, thumbnailUrl: thumbnail, imageUrl: image_url);
+                    
+                    self?.redditTopItems.append(entity)
                 }
                 
                 DispatchQueue.main.async {
-                    
-                    self.tableView.reloadData()
+                    self?.tableView.reloadData()
                 }
             }
         
@@ -198,10 +188,15 @@ class RedditTopTableViewController: UITableViewController {
         cell.comments?.text = "\(redditTopEntity.commentsNumber) Comments"
         
         cell.thumbnail.image = UIImage() // to clear content
+        cell.thumbnail.gestureRecognizers?.forEach(cell.thumbnail.removeGestureRecognizer) //clear recognizers for reusable cell
         
         if let thumbnailUrl = redditTopEntity.thumbnailUrl {
-            cell.thumbnail?.downloadedFrom(link: thumbnailUrl)
+            cell.thumbnail.downloadFrom(link: thumbnailUrl)
             cell.thumbnailHeightConstraint.constant = 78;
+            let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(viewImage(_:)))
+            cell.thumbnail.isUserInteractionEnabled = true
+            cell.thumbnail.tag = indexPath.row
+            cell.thumbnail.addGestureRecognizer(tapGestureRecognizer)
         }else{
             cell.thumbnailHeightConstraint.constant = 0;
         }
@@ -222,9 +217,16 @@ class RedditTopTableViewController: UITableViewController {
         let contentHeight = scrollView.contentSize.height
         
         if offsetY > contentHeight - scrollView.frame.size.height {
-            
             // call your API for more data
             parseJSON()
+        }
+    }
+    
+    private func showError(_ error: String){
+        DispatchQueue.main.async {
+            let alert = UIAlertController(title: "Error", message: error, preferredStyle: UIAlertControllerStyle.alert)
+            alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+            self.present(alert, animated: true, completion: nil)
         }
     }
     
@@ -267,14 +269,21 @@ class RedditTopTableViewController: UITableViewController {
     }
     */
 
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destinationViewController.
-        // Pass the selected object to the new view controller.
+    @objc
+    func viewImage(_ sender: AnyObject) {
+        if let tag = sender.view?.tag{
+            if let imageUrl = redditTopItems[tag].imageUrl{
+                self.imageUrl = imageUrl
+                performSegue(withIdentifier: "ShowImage", sender: self)
+            }else{
+                showError("Destination is not image")
+            }
+        }
     }
-    */
 
+    // MARK: - Navigation
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        let destinationVC = segue.destination as? ImageViewController
+        destinationVC?.imageUrl = imageUrl
+    }
 }

@@ -14,12 +14,12 @@
         <scene sceneID="inY-ZL-zqt">
             <objects>
                 <tableViewController id="0aj-sj-aWs" customClass="RedditTopTableViewController" customModule="RedditTop" customModuleProvider="target" sceneMemberID="viewController">
-                    <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="grouped" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="18" sectionFooterHeight="18" id="1yh-jr-4Mz">
+                    <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="grouped" separatorStyle="default" allowsSelection="NO" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="18" sectionFooterHeight="18" id="1yh-jr-4Mz">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
                         <prototypes>
-                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="RedditTopCell" rowHeight="171" id="vrd-vd-zZJ" customClass="RedditTopTableViewCell" customModule="RedditTop" customModuleProvider="target">
+                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="none" indentationWidth="10" reuseIdentifier="RedditTopCell" rowHeight="171" id="vrd-vd-zZJ" customClass="RedditTopTableViewCell" customModule="RedditTop" customModuleProvider="target">
                                 <rect key="frame" x="0.0" y="55.5" width="320" height="171"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="vrd-vd-zZJ" id="IzX-xo-GeO">
@@ -76,7 +76,7 @@
                                     <outlet property="thumbnail" destination="et1-i7-EWk" id="sxK-Im-SpT"/>
                                     <outlet property="thumbnailHeightConstraint" destination="lbM-Sk-LB3" id="fhD-ou-Qwa"/>
                                     <outlet property="title" destination="b0a-pP-0R9" id="fvi-Uv-Faf"/>
-                                    <segue destination="LXd-Zd-IZA" kind="show" id="EvZ-Jv-EWD"/>
+                                    <segue destination="LXd-Zd-IZA" kind="show" identifier="ShowImage" id="QVF-gX-JOj"/>
                                 </connections>
                             </tableViewCell>
                         </prototypes>
@@ -90,22 +90,41 @@
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="GmZ-dR-BJ5" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="911.25" y="22.183098591549296"/>
+            <point key="canvasLocation" x="833" y="21"/>
         </scene>
-        <!--View Controller-->
+        <!--Image View Controller-->
         <scene sceneID="iS4-ZB-XoQ">
             <objects>
-                <viewController id="LXd-Zd-IZA" sceneMemberID="viewController">
+                <viewController id="LXd-Zd-IZA" customClass="ImageViewController" customModule="RedditTop" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="6w6-Iw-9hA">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <wkWebView contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Ykq-Mg-gHM">
+                                <rect key="frame" x="0.0" y="64" width="320" height="504"/>
+                                <color key="backgroundColor" red="0.36078431370000003" green="0.38823529410000002" blue="0.4039215686" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                <wkWebViewConfiguration key="configuration">
+                                    <audiovisualMediaTypes key="mediaTypesRequiringUserActionForPlayback" none="YES"/>
+                                    <wkPreferences key="preferences"/>
+                                </wkWebViewConfiguration>
+                            </wkWebView>
+                        </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstItem="Ykq-Mg-gHM" firstAttribute="leading" secondItem="PJE-ej-bBu" secondAttribute="leading" id="ATc-23-Olf"/>
+                            <constraint firstItem="Ykq-Mg-gHM" firstAttribute="top" secondItem="PJE-ej-bBu" secondAttribute="top" id="ZIt-9Q-DmI"/>
+                            <constraint firstItem="PJE-ej-bBu" firstAttribute="bottom" secondItem="Ykq-Mg-gHM" secondAttribute="bottom" id="adE-QX-LCC"/>
+                            <constraint firstItem="PJE-ej-bBu" firstAttribute="trailing" secondItem="Ykq-Mg-gHM" secondAttribute="trailing" id="gQ2-H6-RFM"/>
+                        </constraints>
                         <viewLayoutGuide key="safeArea" id="PJE-ej-bBu"/>
                     </view>
+                    <connections>
+                        <outlet property="webkitView" destination="Ykq-Mg-gHM" id="XnA-bg-qxy"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="bYk-PR-qPS" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1615" y="22"/>
+            <point key="canvasLocation" x="1614.375" y="21.12676056338028"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="Sdx-XT-6Ev">
