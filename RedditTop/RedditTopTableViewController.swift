@@ -14,7 +14,7 @@ class RedditTopTableViewCell: UITableViewCell{
     
     @IBOutlet weak var comments: UILabel!
     
-    @IBOutlet weak var thumbnail: UIImageView!
+    @IBOutlet weak var thumbnail: DownloadableImageView!
     
     @IBOutlet weak var thumbnailHeightConstraint: NSLayoutConstraint!
     
@@ -176,7 +176,6 @@ class RedditTopTableViewController: UITableViewController {
         return redditTopItems.count
     }
 
-    
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "RedditTopCell", for: indexPath) as! RedditTopTableViewCell
 

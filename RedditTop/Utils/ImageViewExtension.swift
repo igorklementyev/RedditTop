@@ -8,10 +8,20 @@
 
 import UIKit
 
-extension UIImageView {
+@IBDesignable
+class DownloadableImageView: UIImageView {
+    
+    let actInd: UIActivityIndicatorView = UIActivityIndicatorView()
+    
     func downloadFrom(url: URL, contentMode mode: UIViewContentMode = .scaleAspectFit) {
         contentMode = mode
         URLSession.shared.dataTask(with: url) { [weak self] (data, response, error) in
+            
+            defer{
+                DispatchQueue.main.async(){
+                    self?.actInd.stopAnimating()
+                }
+            }
             guard
                 let httpURLResponse = response as? HTTPURLResponse, httpURLResponse.statusCode == 200,
                 let mimeType = response?.mimeType, mimeType.hasPrefix("image"),
@@ -29,6 +39,26 @@ extension UIImageView {
     
     func downloadFrom(link: String, contentMode mode: UIViewContentMode = .scaleAspectFit) {
         guard let url = URL(string: link) else { return }
+        showActivityIndicator(self)
+        
         downloadFrom(url: url, contentMode: mode)
+    }
+    
+    func showActivityIndicator(_ uiView: UIView) {
+        
+        actInd.frame = uiView.bounds;
+        
+        actInd.hidesWhenStopped = true
+        actInd.activityIndicatorViewStyle =
+            UIActivityIndicatorViewStyle.gray
+        
+        uiView.addSubview(actInd)
+        actInd.startAnimating()
+    }
+    
+    override var bounds: CGRect {
+        willSet {
+            actInd.frame = newValue
+        }
     }
 }
