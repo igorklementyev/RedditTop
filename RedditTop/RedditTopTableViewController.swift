@@ -30,6 +30,7 @@ class RedditTopTableViewController: UITableViewController {
     private var loadingStatus = false
     private var imageUrl = ""
     
+    
     func parseJSON () {
         
         if !loadingStatus{
@@ -45,7 +46,7 @@ class RedditTopTableViewController: UITableViewController {
                 }
                 
                 guard error == nil else {
-                    self?.showError("returned error")
+                    self?.showError("Get json error: " + (error?.localizedDescription)!)
                     return
                 }
                 
@@ -144,6 +145,14 @@ class RedditTopTableViewController: UITableViewController {
         }
     }
     
+    @IBAction func doRefresh(_ sender: UIRefreshControl) {
+        self.after = nil;
+        redditTopItems = [];
+        self.tableView.reloadData()
+        parseJSON()
+        sender.endRefreshing()
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -152,6 +161,8 @@ class RedditTopTableViewController: UITableViewController {
 
         // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
         // self.navigationItem.rightBarButtonItem = self.editButtonItem
+        
+        //self.refreshControl = UIRefreshControl()
         
         self.navigationItem.title = "Reddit top app"
         
