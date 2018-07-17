@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		2026FA4220FBA28600B6D056 /* ImageViewExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2026FA4120FBA28600B6D056 /* ImageViewExtension.swift */; };
+		2026FA4220FBA28600B6D056 /* DownloadableImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2026FA4120FBA28600B6D056 /* DownloadableImageView.swift */; };
 		2026FA4420FBC9F200B6D056 /* RedditTopEntity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2026FA4320FBC9F200B6D056 /* RedditTopEntity.swift */; };
 		2026FA4620FBCBE000B6D056 /* ImageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2026FA4520FBCBE000B6D056 /* ImageViewController.swift */; };
 		2026FA4920FBCCB500B6D056 /* WebKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2026FA4820FBCCB500B6D056 /* WebKit.framework */; };
@@ -19,7 +19,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		2026FA4120FBA28600B6D056 /* ImageViewExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageViewExtension.swift; sourceTree = "<group>"; };
+		2026FA4120FBA28600B6D056 /* DownloadableImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DownloadableImageView.swift; sourceTree = "<group>"; };
 		2026FA4320FBC9F200B6D056 /* RedditTopEntity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RedditTopEntity.swift; sourceTree = "<group>"; };
 		2026FA4520FBCBE000B6D056 /* ImageViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageViewController.swift; sourceTree = "<group>"; };
 		2026FA4820FBCCB500B6D056 /* WebKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WebKit.framework; path = System/Library/Frameworks/WebKit.framework; sourceTree = SDKROOT; };
@@ -47,7 +47,7 @@
 		2012E4E820FD0CFD002B9650 /* Utils */ = {
 			isa = PBXGroup;
 			children = (
-				2026FA4120FBA28600B6D056 /* ImageViewExtension.swift */,
+				2026FA4120FBA28600B6D056 /* DownloadableImageView.swift */,
 				2026FA4320FBC9F200B6D056 /* RedditTopEntity.swift */,
 			);
 			path = Utils;
@@ -168,7 +168,7 @@
 				2026FA4420FBC9F200B6D056 /* RedditTopEntity.swift in Sources */,
 				20EEB3E220FB488A00439D4E /* AppDelegate.swift in Sources */,
 				2026FA4620FBCBE000B6D056 /* ImageViewController.swift in Sources */,
-				2026FA4220FBA28600B6D056 /* ImageViewExtension.swift in Sources */,
+				2026FA4220FBA28600B6D056 /* DownloadableImageView.swift in Sources */,
 				20EEB3FC20FB524500439D4E /* RedditTopTableViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

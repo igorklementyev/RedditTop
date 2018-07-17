@@ -26,12 +26,10 @@ class RedditTopTableViewController: UITableViewController {
 
     private var redditTopItems: [RedditTopEntity] = [RedditTopEntity]()
     private var after: String? = nil
-    //private var before: String? = nil
     private var loadingStatus = false
     private var imageUrl = ""
     
-    
-    func parseJSON () {
+    func loadJSON () {
         
         if !loadingStatus{
             
@@ -70,10 +68,6 @@ class RedditTopTableViewController: UITableViewController {
                     self?.after = after
                 }
                 
-//                weakSelf!.before = nil;
-//                if let before = data["before"] as? String {
-//                    weakSelf!.before = before
-//                }
                 
                 guard let children = data["children"] as? [Any] else {
                     self?.showError("Not containing children")
@@ -131,7 +125,7 @@ class RedditTopTableViewController: UITableViewController {
                         }
                     }
                     
-                    let entity = RedditTopEntity(title: title, author: author, created: createdUtcDate, commentsNumber: num_comments, thumbnailUrl: thumbnail, imageUrl: image_url);
+                    let entity = RedditTopEntity(title: title, author: author, created: createdUtcDate, commentsNumber: num_comments, thumbnailUrl: thumbnail, imageUrl: image_url)
                     
                     self?.redditTopItems.append(entity)
                 }
@@ -149,27 +143,25 @@ class RedditTopTableViewController: UITableViewController {
         self.after = nil;
         redditTopItems = [];
         self.tableView.reloadData()
-        parseJSON()
+        //loadJSON()
         sender.endRefreshing()
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        // Uncomment the following line to preserve selection between presentations
-        // self.clearsSelectionOnViewWillAppear = false
-
-        // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
-        // self.navigationItem.rightBarButtonItem = self.editButtonItem
-        
-        //self.refreshControl = UIRefreshControl()
         
         self.navigationItem.title = "Reddit top app"
         
         self.tableView?.rowHeight = UITableViewAutomaticDimension;
         self.tableView?.estimatedRowHeight = 210
         
-        parseJSON ()
+        //loadJSON ()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        if redditTopItems.count == 0{ //application was not restored and it is the first time appearing
+            loadJSON ()
+        }
     }
 
     override func didReceiveMemoryWarning() {
@@ -178,7 +170,6 @@ class RedditTopTableViewController: UITableViewController {
     }
 
     // MARK: - Table view data source
-
     override func numberOfSections(in tableView: UITableView) -> Int {
         return 1
     }
@@ -228,7 +219,7 @@ class RedditTopTableViewController: UITableViewController {
         
         if offsetY > contentHeight - scrollView.frame.size.height {
             // call your API for more data
-            parseJSON()
+            loadJSON()
         }
     }
     
@@ -240,44 +231,6 @@ class RedditTopTableViewController: UITableViewController {
         }
     }
     
-//    override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-//        return 215.0
-//    }
-
-    /*
-    // Override to support conditional editing of the table view.
-    override func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
-        // Return false if you do not want the specified item to be editable.
-        return true
-    }
-    */
-
-    /*
-    // Override to support editing the table view.
-    override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
-        if editingStyle == .delete {
-            // Delete the row from the data source
-            tableView.deleteRows(at: [indexPath], with: .fade)
-        } else if editingStyle == .insert {
-            // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
-        }    
-    }
-    */
-
-    /*
-    // Override to support rearranging the table view.
-    override func tableView(_ tableView: UITableView, moveRowAt fromIndexPath: IndexPath, to: IndexPath) {
-
-    }
-    */
-
-    /*
-    // Override to support conditional rearranging of the table view.
-    override func tableView(_ tableView: UITableView, canMoveRowAt indexPath: IndexPath) -> Bool {
-        // Return false if you do not want the item to be re-orderable.
-        return true
-    }
-    */
 
     @objc
     func viewImage(_ sender: AnyObject) {
@@ -295,5 +248,42 @@ class RedditTopTableViewController: UITableViewController {
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         let destinationVC = segue.destination as? ImageViewController
         destinationVC?.imageUrl = imageUrl
+    }
+    
+    // MARK: - Encoding/Decoding
+    override func encodeRestorableState(with coder: NSCoder) {
+        
+        coder.encode(after, forKey: "after")
+        
+        var redditTopItemsObjects: [RedditTopEntityWrapperClass] = []
+        redditTopItemsObjects.reserveCapacity(redditTopItems.count)
+        
+        redditTopItems.forEach{ entity in
+            redditTopItemsObjects.append(RedditTopEntityWrapperClass(redditTopEntity: entity))
+        }
+        
+        coder.encode(redditTopItemsObjects, forKey: "redditTopItems")
+        super.encodeRestorableState(with: coder)
+    }
+    
+    override func decodeRestorableState(with coder: NSCoder) {
+        let after = coder.decodeObject(forKey: "imageUrlId")
+        if after is String {
+            self.after = after as? String
+        }
+        
+        let redditTopItemsObjectsAny = coder.decodeObject(forKey: "redditTopItems")
+        let redditTopItemsObjects = redditTopItemsObjectsAny as? [RedditTopEntityWrapperClass];
+        self.redditTopItems = []
+        
+        redditTopItemsObjects!.forEach{ entityWrapper in
+            self.redditTopItems.append(entityWrapper.redditTopEntity!)
+        }
+        
+        super.decodeRestorableState(with: coder)
+    }
+    
+    override func applicationFinishedRestoringState() {
+        self.tableView.reloadData();
     }
 }

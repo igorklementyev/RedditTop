@@ -13,8 +13,8 @@
         <!--Reddit Top Table View Controller-->
         <scene sceneID="inY-ZL-zqt">
             <objects>
-                <tableViewController id="0aj-sj-aWs" customClass="RedditTopTableViewController" customModule="RedditTop" customModuleProvider="target" sceneMemberID="viewController">
-                    <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="grouped" separatorStyle="default" allowsSelection="NO" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="18" sectionFooterHeight="18" id="1yh-jr-4Mz">
+                <tableViewController storyboardIdentifier="RedditTopTableViewController" useStoryboardIdentifierAsRestorationIdentifier="YES" id="0aj-sj-aWs" customClass="RedditTopTableViewController" customModule="RedditTop" customModuleProvider="target" sceneMemberID="viewController">
+                    <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" restorationIdentifier="RedditTopTableViewController" alwaysBounceVertical="YES" dataMode="prototypes" style="grouped" separatorStyle="default" allowsSelection="NO" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="18" sectionFooterHeight="18" id="1yh-jr-4Mz">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
@@ -88,6 +88,7 @@
                     </tableView>
                     <navigationItem key="navigationItem" id="as3-vo-dtC"/>
                     <refreshControl key="refreshControl" opaque="NO" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" enabled="NO" contentHorizontalAlignment="center" contentVerticalAlignment="center" id="AmY-jf-jcx">
+                        <rect key="frame" x="0.0" y="0.0" width="1000" height="1000"/>
                         <autoresizingMask key="autoresizingMask"/>
                         <connections>
                             <action selector="doRefresh:" destination="0aj-sj-aWs" eventType="valueChanged" id="t13-CG-w0U"/>
@@ -101,8 +102,8 @@
         <!--Image View Controller-->
         <scene sceneID="iS4-ZB-XoQ">
             <objects>
-                <viewController id="LXd-Zd-IZA" customClass="ImageViewController" customModule="RedditTop" customModuleProvider="target" sceneMemberID="viewController">
-                    <view key="view" contentMode="scaleToFill" id="6w6-Iw-9hA">
+                <viewController storyboardIdentifier="ImageViewController" useStoryboardIdentifierAsRestorationIdentifier="YES" id="LXd-Zd-IZA" customClass="ImageViewController" customModule="RedditTop" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" restorationIdentifier="ImageViewController" id="6w6-Iw-9hA">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
@@ -135,7 +136,7 @@
         <!--Navigation Controller-->
         <scene sceneID="Sdx-XT-6Ev">
             <objects>
-                <navigationController automaticallyAdjustsScrollViewInsets="NO" id="lX5-lL-SDU" sceneMemberID="viewController">
+                <navigationController storyboardIdentifier="RootNavigationController" automaticallyAdjustsScrollViewInsets="NO" useStoryboardIdentifierAsRestorationIdentifier="YES" id="lX5-lL-SDU" sceneMemberID="viewController">
                     <toolbarItems/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="fVf-Gd-Fn8">
                         <rect key="frame" x="0.0" y="20" width="320" height="44"/>

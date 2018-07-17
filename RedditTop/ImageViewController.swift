@@ -21,12 +21,35 @@ class ImageViewController: UIViewController, WKNavigationDelegate {
         self.navigationItem.title = "Long press to save image"
 
         // Do any additional setup after loading the view.
-        webkitView.load(URLRequest(url: URL(string: imageUrl)!))
+        if (imageUrl.count > 0){
+            webkitView.load(URLRequest(url: URL(string: imageUrl)!))
+        }
     }
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
+    }
+    
+    // MARK: - Encoding/Decoding
+    override func encodeRestorableState(with coder: NSCoder) {
+
+        coder.encode(imageUrl, forKey: "imageUrlId")
+        super.encodeRestorableState(with: coder)
+    }
+    
+    override func decodeRestorableState(with coder: NSCoder) {
+        let object = coder.decodeObject(forKey: "imageUrlId")
+        
+        if object is String {
+            imageUrl = object as! String
+        }
+        
+        super.decodeRestorableState(with: coder)
+    }
+    
+    override func applicationFinishedRestoringState() {
+       webkitView.load(URLRequest(url: URL(string: imageUrl)!))
     }
     
     // MARK: - Navigation
